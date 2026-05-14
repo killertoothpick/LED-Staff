@@ -26,7 +26,7 @@ def main():
         config.TOP_COUNT,
         brightness=0.25,
         auto_write=False,
-        pixel_order=neopixel.RGB,
+        pixel_order=neopixel.GRB,
     )
     try:
         pixels.fill((0, 0, 0)); pixels.show(); time.sleep(0.25)

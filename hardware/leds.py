@@ -73,7 +73,7 @@ class StaffSurface:
             config.TOP_COUNT,
             brightness=config.DEFAULT_TOP_BRIGHTNESS,
             auto_write=False,
-            pixel_order=neopixel.RGB,
+            pixel_order=neopixel.GRB,
         )
         return cls(main, top)
 
