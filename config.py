@@ -103,3 +103,11 @@ DEBUG_LOG_LINES = int(os.environ.get("LED_STAFF_DEBUG_LOG_LINES", "8"))
 IMU_AXIS_X = "right"
 IMU_AXIS_Y = "up"
 IMU_AXIS_Z = "perpendicular"
+
+
+# Runtime memory stability. The Pi can keep freed C-extension memory in RSS
+# unless glibc is asked to trim periodically. This keeps the long-running
+# systemd service from slowly drifting into OOM territory.
+MEMORY_MAINTENANCE_SEC = float(os.environ.get("LED_STAFF_MEMORY_MAINTENANCE_SEC", "15"))
+MEMORY_LOG_SEC = float(os.environ.get("LED_STAFF_MEMORY_LOG_SEC", "60"))
+MEMORY_TRIM_ENABLED = os.environ.get("LED_STAFF_MEMORY_TRIM", "1") != "0"

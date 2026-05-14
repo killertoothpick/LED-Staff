@@ -26,7 +26,8 @@ class MockNeoPixel:
         return self.buf[index]
 
     def fill(self, color: Color) -> None:
-        self.buf = [color for _ in range(self.n)]
+        for i in range(self.n):
+            self.buf[i] = color
 
     def show(self) -> None:
         pass
@@ -73,7 +74,7 @@ class StaffSurface:
             config.TOP_COUNT,
             brightness=config.DEFAULT_TOP_BRIGHTNESS,
             auto_write=False,
-            pixel_order=neopixel.RGB,
+            pixel_order=neopixel.GRB,
         )
         return cls(main, top)
 
@@ -81,8 +82,12 @@ class StaffSurface:
         self.output_scale = max(0.0, min(config.MAX_OUTPUT_SCALE, scale))
 
     def clear(self) -> None:
-        self._main_pending = [BLACK for _ in range(config.MAIN_COUNT)]
-        self._top_pending = [BLACK for _ in range(config.TOP_COUNT)]
+        # Keep the same list objects forever. Reallocating these buffers at
+        # 60 FPS caused allocator/RSS growth on the Pi service.
+        for i in range(len(self._main_pending)):
+            self._main_pending[i] = BLACK
+        for i in range(len(self._top_pending)):
+            self._top_pending[i] = BLACK
 
     def fill_all(self, color: Color) -> None:
         self.fill_top(color)

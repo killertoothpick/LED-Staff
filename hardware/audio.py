@@ -33,15 +33,25 @@ class AudioProcessor:
             self._thread.join(timeout=1.0)
 
     def snapshot(self, gain: float = 1.0) -> AudioState:
+        # Return a separate object for the frame, but keep callback state itself
+        # stable/in-place. This is small compared with audio callback churn.
         with self._lock:
-            s = AudioState(**self._state.__dict__)
-        s.gain = gain
-        s.volume = min(1.0, s.volume * gain)
-        s.volume_smooth = min(1.0, s.volume_smooth * gain)
-        s.bass = min(1.0, s.bass * gain)
-        s.mids = min(1.0, s.mids * gain)
-        s.treble = min(1.0, s.treble * gain)
-        return s
+            base = self._state
+            volume = base.volume
+            volume_smooth = base.volume_smooth
+            bass = base.bass
+            mids = base.mids
+            treble = base.treble
+            clipped = base.clipped
+        return AudioState(
+            volume=min(1.0, volume * gain),
+            volume_smooth=min(1.0, volume_smooth * gain),
+            bass=min(1.0, bass * gain),
+            mids=min(1.0, mids * gain),
+            treble=min(1.0, treble * gain),
+            gain=gain,
+            clipped=clipped,
+        )
 
     def _run(self) -> None:
         try:
@@ -53,22 +63,27 @@ class AudioProcessor:
 
         def callback(indata, frames, time_info, status):
             try:
-                samples = np.asarray(indata[:, 0], dtype=np.float32)
-                rms = float(np.sqrt(np.mean(samples * samples)))
-                clipped = bool(np.max(np.abs(samples)) > 0.98)
+                # sounddevice gives a float32 ndarray when dtype="float32".
+                # Use views and dot/min/max to avoid allocating samples*samples
+                # or abs(samples) temporary arrays every audio block.
+                samples = indata[:, 0]
+                n = int(samples.size)
+                if n <= 0:
+                    return
+                rms = float((np.dot(samples, samples) / n) ** 0.5)
+                peak = max(float(np.max(samples)), -float(np.min(samples)))
+                clipped = peak > 0.98
                 volume = min(1.0, rms * 12.0)
                 with self._lock:
-                    prev = self._state.volume_smooth
-                    smooth = prev * 0.85 + volume * 0.15
-                    self._state = AudioState(
-                        volume=volume,
-                        volume_smooth=smooth,
-                        bass=volume,
-                        mids=volume,
-                        treble=volume,
-                        gain=1.0,
-                        clipped=clipped,
-                    )
+                    state = self._state
+                    smooth = state.volume_smooth * 0.85 + volume * 0.15
+                    state.volume = volume
+                    state.volume_smooth = smooth
+                    state.bass = volume
+                    state.mids = volume
+                    state.treble = volume
+                    state.gain = 1.0
+                    state.clipped = clipped
             except Exception:
                 pass
 
@@ -78,6 +93,7 @@ class AudioProcessor:
                     channels=1,
                     samplerate=config.AUDIO_SAMPLE_RATE,
                     blocksize=config.AUDIO_BLOCK_SIZE,
+                    dtype="float32",
                     callback=callback,
                 ):
                     self._logger("Audio input initialized")

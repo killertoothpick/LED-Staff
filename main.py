@@ -8,6 +8,7 @@ import config
 from animations import build_animations
 from core.context import FrameContext
 from core.debug import DebugDashboard, RuntimeLog, menu_value_text
+from core.memory import MemoryMaintenance
 from core.presets import PresetStore
 from core.timing import FPSCounter
 from hardware.audio import AudioProcessor
@@ -65,6 +66,7 @@ def main() -> int:
 
     log = RuntimeLog()
     dashboard = DebugDashboard()
+    memory = MemoryMaintenance(logger=log.add)
     log.add("LED staff runtime starting")
 
     staff = StaffSurface.create()
@@ -238,6 +240,8 @@ def main() -> int:
                 log=log,
                 presets=presets,
             )
+
+            memory.tick(frame_start)
 
             frame += 1
             elapsed = time.monotonic() - frame_start

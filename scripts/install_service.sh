@@ -23,6 +23,8 @@ User=root
 Group=root
 WorkingDirectory=$PROJECT_DIR
 Environment=PYTHONUNBUFFERED=1
+Environment=MALLOC_ARENA_MAX=2
+Environment=LED_STAFF_DEBUG=0
 # Audio is enabled because hardware testing confirmed the I2S mic works.
 Environment=LED_STAFF_AUDIO=1
 ExecStart=$PYTHON_BIN -u $PROJECT_DIR/main.py
