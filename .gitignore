@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
@@ -216,3 +217,33 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+=======
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual env
+.venv/
+venv/
+
+# Local runtime state
+*.log
+*.pid
+.env
+.env.*
+
+# Device-local saved settings/presets
+data/presets.json
+data/*.tmp
+
+# Local backups / copied zips
+*.zip
+backups/
+
+# OS/editor junk
+.DS_Store
+.vscode/
+.idea/
+>>>>>>> 82ab52f (Initial LED staff runtime with confirmed hardware)

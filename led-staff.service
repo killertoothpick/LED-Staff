@@ -1,0 +1,22 @@
+[Unit]
+Description=LED Staff Runtime
+After=local-fs.target systemd-modules-load.service systemd-udev-trigger.service
+Wants=local-fs.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/home/pi/led_staff
+Environment=PYTHONUNBUFFERED=1
+# Leave audio off until the I2S mic is configured and tested. Set to 1 when ready.
+Environment=LED_STAFF_AUDIO=0
+ExecStart=/usr/bin/python3 -u /home/pi/led_staff/main.py
+Restart=always
+RestartSec=1
+TimeoutStartSec=10
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
