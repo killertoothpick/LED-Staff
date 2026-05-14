@@ -1,0 +1,5 @@
+# Optional audio-input dependencies.
+# aubio is intentionally not installed here because Python 3.13/NumPy builds can fail.
+# The current runtime uses hardware/audio.py for mic volume and hardware/beat.py for a placeholder beat clock.
+numpy
+sounddevice

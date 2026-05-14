@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+
+# Virtual env
+.venv/
+venv/
+
+# Local runtime state
+*.log
+*.pid
+.env
+.env.*
+
+# Device-local saved settings/presets
+data/presets.json
+data/*.tmp
+
+# Local backups / copied zips
+*.zip
+backups/
+
+# OS/editor junk
+.DS_Store
+.vscode/
+.idea/

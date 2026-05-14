@@ -1,0 +1,6 @@
+# Core runtime dependencies.
+# Audio/beat detection dependencies are intentionally split into requirements-audio.txt
+# so the basic staff can install and run before the I2S mic/audio stack is ready.
+adafruit-circuitpython-neopixel
+adafruit-circuitpython-lsm6ds
+RPi.GPIO
